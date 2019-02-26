@@ -6,7 +6,8 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 /**
- *
+ * Classs representing a time series.
+ * 
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
 public class TimeSeries extends ArrayList<Point2D> {
@@ -21,7 +22,7 @@ public class TimeSeries extends ArrayList<Point2D> {
     private int startTime = 0;
     
     /**
-     * Constructs an empty time series with an initial capacity of ten.
+     * Constructs an empty time series.
      */
     public TimeSeries() {
         super();

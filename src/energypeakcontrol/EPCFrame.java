@@ -575,7 +575,7 @@ public class EPCFrame extends javax.swing.JFrame {
 //            timeSeriePanel.addTimeData(ALPHA_TIMESERIES_INDEX, new Point2D.Double(evt.getTime(), evt.getAlpha()));
             timeSeriePanel.addTimeData(ESTIMATION_TIMESERIES_INDEX, new Point2D.Double(evt.getTime(), evt.getEstimationValue()));
             timeSeriePanel.addTimeData(FUZZY_DANGER_TIMESERIES_INDEX, new Point2D.Double(evt.getTime(), evt.getDangerDegree()*150.0));
-            timeSeriePanel.addTimeData(MEAN_TIMESERIES_INDEX, new Point2D.Double(evt.getTime(), evt.getMeanBehind()));
+            timeSeriePanel.addTimeData(MEAN_TIMESERIES_INDEX, new Point2D.Double(evt.getTime(), evt.getTendencyBehind()));
             timeSeriePanel.addTimeData(ADJUSTED_TIMESERIES_INDEX, new Point2D.Double(evt.getTime(), evt.getAdjustedValue()));
             timeSeriePanel.setCurrentTime((int)evt.getTime());            
             //timeSeriePanel.repaint(); //No necesario, llamado implícitamente 

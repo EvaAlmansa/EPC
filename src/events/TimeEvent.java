@@ -24,7 +24,7 @@ public class TimeEvent extends EventObject {
      * Tendency of the time series calculated as the mean over the values behind
      * this time
      */
-    private final Double mean_behind;
+    private final Double tendency_behind;
     /**
      * New value for the time series at this time (result of an adjustment
      * process)
@@ -38,15 +38,15 @@ public class TimeEvent extends EventObject {
      * @param time time (in time units) associated to this event
      * @param estimation estimation of the time series value at this time.
      * @param danger_degree membeship degree to 'danger' at this time.
-     * @param mean_behind tendency value of the time series at this time.
+     * @param tendency_behind tendency value of the time series at this time.
      * @param adjusted_value new value for the time series at this time
      */
-    public TimeEvent(Object source, long time, double estimation, double danger_degree, double mean_behind, double adjusted_value) {
+    public TimeEvent(Object source, long time, double estimation, double danger_degree, double tendency_behind, double adjusted_value) {
         super(source);
         this.time = time;
         this.estimation = estimation;
         this.danger_degree = danger_degree;
-        this.mean_behind = mean_behind;
+        this.tendency_behind = tendency_behind;
         this.adjusted_value = adjusted_value;
     }
     
@@ -90,7 +90,7 @@ public class TimeEvent extends EventObject {
      * 
      * @return the tendency of the time series.
      */
-    public Double getMeanBehind() {
-        return mean_behind;
+    public Double getTendencyBehind() {
+        return tendency_behind;
     }
 }
