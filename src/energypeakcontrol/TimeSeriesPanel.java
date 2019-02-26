@@ -57,12 +57,10 @@ public class TimeSeriesPanel extends javax.swing.JPanel {
     private final Color colors[] = {Color.black, Color.blue, 
         Color.red, Color.orange, Color.green};
     /**
-     * The Y coordinate of the limits lines. They are assocciated to the
+     * The Y coordinate of the limits lines. They are associated to the
      * parameters of a trapezoidal membeship function.
      */
     private float limitsLinesY[] = null;    
-    
-    
     
     
     /**
@@ -85,13 +83,17 @@ public class TimeSeriesPanel extends javax.swing.JPanel {
     /**
      * Add a time series assocciated to this panel. A transformation given by a
      * translation (tx,ty) and a scale (sx,sy) is applied when the time series
-     * is plloted.
+     * is plotted.
      *
-     * @param series the new time series. 
-     * @param tx 
-     * @param ty 
-     * @param sx 
-     * @param sy 
+     * @param series the new time series.
+     * @param tx the distance by which coordinates are translated in the X axis
+     * direction
+     * @param ty the distance by which coordinates are translated in the Y axis
+     * direction
+     * @param sx the factor by which coordinates are scaled along the X axis
+     * direction
+     * @param sy the factor by which coordinates are scaled along the Y axis
+     * direction rendering operations.
      */
     public final void addTimeSeries(TimeSeries series, double tx, double ty,  double sx, double sy) {
         if (series != null) {
@@ -123,13 +125,14 @@ public class TimeSeriesPanel extends javax.swing.JPanel {
     }
     
     /**
+     * Add a time data to the index-th time series of this panel.
      * 
-     * @param timeSeriesIndex
-     * @param data 
+     * @param index index of the time series.
+     * @param data the data to be added represented as a pair (time, value).
      */
-    public void addTimeData(int timeSeriesIndex, Point2D data){
-        TimeSeries ts = series.get(timeSeriesIndex);
-        GeneralPath gp = graph.get(timeSeriesIndex);        
+    public void addTimeData(int index, Point2D data){
+        TimeSeries ts = series.get(index);
+        GeneralPath gp = graph.get(index);        
         //Update the graph
         if(ts.isEmpty()){
             gp.moveTo(data.getX(),-data.getY());
@@ -178,7 +181,7 @@ public class TimeSeriesPanel extends javax.swing.JPanel {
     }
     
     /**
-     * Returns the current time in the simulation process.
+     * Returns the current time in this panel.
      * 
      * @return the current time.
      */
@@ -187,7 +190,7 @@ public class TimeSeriesPanel extends javax.swing.JPanel {
     }
 
     /**
-     * Set the current time for the simulation process.
+     * Set the current time of this panel.
      * 
      * @param time the new current time.
      */
@@ -434,17 +437,48 @@ public class TimeSeriesPanel extends javax.swing.JPanel {
 
     
     /**
-     * 
+     * Inner class representing an affine transform information.
      */
     public class AffineTransformInfo {
-
+        /**
+         * The distance by which coordinates are translated in the X axis and Y
+         * axis direction
+         */
         public double tx, ty;
+        /**
+         * The factor by which coordinates are scaled along the X axis and Y
+         * axis direction
+         */
         public double sx, sy;
-        
+
+        /**
+         * Creates a new affine transform information object.
+         *
+         * @param tx the distance by which coordinates are translated in the X
+         * axis direction
+         * @param ty the distance by which coordinates are translated in the Y
+         * axis direction
+         * @param sx the factor by which coordinates are scaled along the X axis
+         * direction
+         * @param sy the factor by which coordinates are scaled along the Y axis
+         * direction
+         */
         public AffineTransformInfo(double tx, double ty, double sx, double sy) {
             this.setTransformValues(tx, ty, sx, sy);
         }
         
+        /**
+         * Set the parameters of the affine transform.
+         *
+         * @param tx the distance by which coordinates are translated in the X
+         * axis direction
+         * @param ty the distance by which coordinates are translated in the Y
+         * axis direction
+         * @param sx the factor by which coordinates are scaled along the X axis
+         * direction
+         * @param sy the factor by which coordinates are scaled along the Y axis
+         * direction
+         */
         public final void setTransformValues(double tx, double ty, double sx, double sy) {
             this.tx = tx;
             this.ty = ty;
