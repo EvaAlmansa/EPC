@@ -189,8 +189,8 @@ public class Simulator {
             
             //Main time series is adjusted on the basis of the injection value.
             //Note that the the adjustment value for 'time' must be calculated 
-            //on the basis of the injection calculated on 'time-1'. Since in  
-            //this method the simulation process analyzes the time 'time',  
+            //on the basis of the injection calculated on 'time-1'. Since this  
+            //method is called when the simulation process analyzes the time 'time',  
             //we have to use the injection value calculated in the previuos time      
             adjusted_value =  main_series.get(time).getY()+inject_previous_time;            
             inject_previous_time = inject;
@@ -238,7 +238,7 @@ public class Simulator {
         if (n > 0) {
             mean_behind /= n;
         } else {
-            //Exceptional case: the series starts with points outside the 
+            //Unusual case: the series starts with points outside the 
             //margins and there is no data to estimate the mean. In this 
             //case, the central point of the core of the fuzzyset 'desired 
             //voltage' is used
@@ -261,7 +261,7 @@ public class Simulator {
      * Pause the simulation. 
      */
     synchronized public void pauseSimulation() {
-        //NOTE: Uses deprecated methods, need updating
+        //NOTE: Uses deprecated methods, need to be updated
         if (simulation_thread != null) {
             if(!suspended) simulation_thread.suspend();
             else simulation_thread.resume();
@@ -273,7 +273,7 @@ public class Simulator {
      * Reset the simulation
      */
     synchronized public void resetSimulation() {
-        //NOTE: Uses deprecated methods, need updating
+        //NOTE: Uses deprecated methods, need to be updated
         if (simulation_thread != null) {
             simulation_thread.stop();
             simulation_thread = null;
