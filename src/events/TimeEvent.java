@@ -3,17 +3,34 @@ package events;
 import java.util.EventObject;
 
 /**
- *
+ * Class representing a time event associated to a time series.
+ * 
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
 public class TimeEvent extends EventObject {
- 
+    /**
+     * Time (in time units) associated to this event.
+     */
     private long time;
+    /**
+     * Estimation of the time series value at this time.
+     */
     private Double estimation;
+    /**
+     * Membeship degree to 'danger' at this time.
+     */
     private Double danger_degree;
+    /**
+     * Tendency of the time series calculated as the mean over the values behind
+     * this time
+     */
     private Double mean_behind;
+    /**
+     * New value for the time series at this time (result of an adjustment
+     * process)
+     */
     private Double adjusted_value;
-    
+
     public TimeEvent(Object source, long time, double estimation, double danger_degree, double mean_behind, double adjusted_value) {
         super(source);
         this.time = time;
