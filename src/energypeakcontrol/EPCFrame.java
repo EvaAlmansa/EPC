@@ -1,0 +1,623 @@
+package energypeakcontrol;
+
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import energypeakcontrol.TimeSeriesPanel.AffineTransformInfo;
+import events.TimeEvent;
+import events.TimeListener;
+import java.awt.Point;
+import java.awt.geom.Point2D;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+
+/**
+ * Class representing the main frame of this application.
+ * 
+ * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
+ */
+public class EPCFrame extends javax.swing.JFrame {
+    /**
+     * Time series shown in the frame.
+     */
+    private TimeSeries series;
+    /**
+     * Simulator associated to this frame.
+     */
+    private Simulator simulator = null;
+    /**
+     * Default index for the 'alpha' time series.
+     */
+    private static final int ESTIMATION_TIMESERIES_INDEX = 1;
+    /**
+     * Default index for the 'fuzzy slope' time series.
+     */
+    private static final int FUZZY_DANGER_TIMESERIES_INDEX = 2;
+    /**
+     * Default index for the 'fuzzy slope' time series.
+     */
+    private static final int MEAN_TIMESERIES_INDEX = 3;
+    /**
+     * Default index for the 'fuzzy slope' time series.
+     */
+    private static final int ADJUSTED_TIMESERIES_INDEX = 4;
+    /**
+     * Test file.
+     */
+    private static final String TEST_FILE = "cnt_501.csv";
+            
+    /**
+     * Creates a new frame.
+     */
+    public EPCFrame() {
+        initComponents();
+        setSize(1000,700);
+        setIconImage((new ImageIcon(getClass().getResource("/icons/logoTT.png"))).getImage());                
+        //A default time series is loaded   
+        openDefaultSeries();        
+    }
+
+    /**
+     * 
+     */
+    private void openDefaultSeries(){
+        series = readSeries(TEST_FILE);
+        if (series != null) {
+            //System.out.println(series);
+            timeSeriePanel.setTimeScale(10);
+            timeSeriePanel.addTimeSeries(series, 0, GlobalSettings.getYAxisPosition(), 1, GlobalSettings.getZoom());
+            timeSeriePanel.setLimitLines(GlobalSettings.getHighA(), GlobalSettings.getHighB(),
+                    GlobalSettings.getHighC(), GlobalSettings.getHighD());
+            
+            deslizador_time.setMinimum(0);
+            deslizador_time.setMaximum(series.size() - 1);
+            deslizador_time.setValue(0);
+            
+            simulator = new Simulator(series, GlobalSettings.getHighA(),
+                    GlobalSettings.getHighB(), GlobalSettings.getHighC(), GlobalSettings.getHighD());            
+            simulator.addTimeListener(new TimeHandler());
+            botonPlay.setEnabled(true);
+        }
+    }
+    
+    /**
+     * For testing: random time series.
+     * 
+     * @param size size of the time series.
+     * @param maxValue maximum value in the time series.
+     */
+    private TimeSeries randomSeries(int size, int maxValue){
+        TimeSeries series = new TimeSeries();
+        double U01 = Math.random();
+        Point2D p = new Point2D.Float(0,(int)(U01*maxValue));
+        series.add(p);
+        for(int i=1; i< size; i++){
+            U01 = Math.random(); 
+            p = new Point2D.Float(i,(int)(U01*maxValue));
+            series.add(p);
+        }
+        return(series);
+    }
+    
+    /**
+     * Reads a time series from a file. The file must be a CSV format file with 
+     * a 'voltage' field, a header line and ';' as line separator.
+     * 
+     * @param file the file where the time series is stored.
+     * @return a time series with the data stored in the file.
+     */
+    private TimeSeries readSeries(String file) {
+        TimeSeries series = new TimeSeries();
+        CSVReader reader = null;
+        try {
+            char SEPARATOR = ';';
+            int VOLTAGE_INDEX = 1;
+            FileReader fr = new FileReader(file);
+            CSVParser parser = new CSVParserBuilder().withSeparator(SEPARATOR).build();
+            reader = new CSVReaderBuilder(fr).withCSVParser(parser).withSkipLines(1).build();
+            String[] nextLine = null;
+            int t = 0;
+            Point2D p;
+            while ((nextLine = reader.readNext()) != null) {
+                p = new Point2D.Float(t++, Float.valueOf(nextLine[VOLTAGE_INDEX]));
+                series.add(p);
+            }
+        } catch (Exception e) {
+            series = null;
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException ex) {
+                }
+            }
+        }
+        return series;
+    }
+    
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        panelHerramientas = new javax.swing.JPanel();
+        barraArchivo = new javax.swing.JToolBar();
+        botonAbrir = new javax.swing.JButton();
+        botonPreferencias = new javax.swing.JButton();
+        barraZoom = new javax.swing.JToolBar();
+        botonZoomIn = new javax.swing.JButton();
+        botonZoomOut = new javax.swing.JButton();
+        bShowDangerDegree = new javax.swing.JToggleButton();
+        bShowEstimation = new javax.swing.JToggleButton();
+        bShowMean = new javax.swing.JToggleButton();
+        bShowAdjusted = new javax.swing.JToggleButton();
+        barraSimulacion = new javax.swing.JToolBar();
+        botonPlay = new javax.swing.JButton();
+        botonPause = new javax.swing.JButton();
+        botonRefresh = new javax.swing.JButton();
+        panelCentral = new javax.swing.JPanel();
+        timeSeriePanel = new energypeakcontrol.TimeSeriesPanel();
+        panelDeslizador = new javax.swing.JPanel();
+        labelTime = new javax.swing.JLabel();
+        deslizador_time = new javax.swing.JSlider();
+        panelSur = new javax.swing.JPanel();
+        barraEstado = new javax.swing.JPanel();
+        posicionRaton = new javax.swing.JLabel();
+        zoom = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Peak control");
+
+        panelHerramientas.setPreferredSize(new java.awt.Dimension(400, 40));
+        panelHerramientas.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        barraArchivo.setRollover(true);
+        barraArchivo.setAlignmentX(0.0F);
+
+        botonAbrir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/open24.png"))); // NOI18N
+        botonAbrir.setToolTipText("Open");
+        botonAbrir.setFocusable(false);
+        botonAbrir.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        botonAbrir.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        botonAbrir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonAbrirActionPerformed(evt);
+            }
+        });
+        barraArchivo.add(botonAbrir);
+
+        botonPreferencias.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/settings24.png"))); // NOI18N
+        botonPreferencias.setToolTipText("Configuration");
+        botonPreferencias.setFocusable(false);
+        botonPreferencias.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        botonPreferencias.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        botonPreferencias.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonPreferenciasActionPerformed(evt);
+            }
+        });
+        barraArchivo.add(botonPreferencias);
+
+        panelHerramientas.add(barraArchivo);
+
+        barraZoom.setRollover(true);
+
+        botonZoomIn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/zoomIn.png"))); // NOI18N
+        botonZoomIn.setToolTipText("Zoom in");
+        botonZoomIn.setFocusable(false);
+        botonZoomIn.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        botonZoomIn.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        botonZoomIn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonZoomInActionPerformed(evt);
+            }
+        });
+        barraZoom.add(botonZoomIn);
+
+        botonZoomOut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/zoomOut.png"))); // NOI18N
+        botonZoomOut.setToolTipText("Zoom out");
+        botonZoomOut.setFocusable(false);
+        botonZoomOut.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        botonZoomOut.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        botonZoomOut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonZoomOutActionPerformed(evt);
+            }
+        });
+        barraZoom.add(botonZoomOut);
+
+        bShowDangerDegree.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/equalizer.png"))); // NOI18N
+        bShowDangerDegree.setSelected(true);
+        bShowDangerDegree.setToolTipText("Show danger degree");
+        bShowDangerDegree.setFocusable(false);
+        bShowDangerDegree.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        bShowDangerDegree.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        bShowDangerDegree.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bShowDangerDegreeActionPerformed(evt);
+            }
+        });
+        barraZoom.add(bShowDangerDegree);
+
+        bShowEstimation.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/estimacion.png"))); // NOI18N
+        bShowEstimation.setToolTipText("Show estimation");
+        bShowEstimation.setFocusable(false);
+        bShowEstimation.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        bShowEstimation.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        bShowEstimation.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bShowEstimationActionPerformed(evt);
+            }
+        });
+        barraZoom.add(bShowEstimation);
+
+        bShowMean.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/mean.png"))); // NOI18N
+        bShowMean.setSelected(true);
+        bShowMean.setToolTipText("Show mean tendency ");
+        bShowMean.setFocusable(false);
+        bShowMean.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        bShowMean.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        bShowMean.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bShowMeanActionPerformed(evt);
+            }
+        });
+        barraZoom.add(bShowMean);
+
+        bShowAdjusted.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/adjust.png"))); // NOI18N
+        bShowAdjusted.setSelected(true);
+        bShowAdjusted.setToolTipText("Show adjusted series ");
+        bShowAdjusted.setFocusable(false);
+        bShowAdjusted.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        bShowAdjusted.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        bShowAdjusted.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bShowAdjustedActionPerformed(evt);
+            }
+        });
+        barraZoom.add(bShowAdjusted);
+
+        panelHerramientas.add(barraZoom);
+
+        barraSimulacion.setRollover(true);
+
+        botonPlay.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/play24x24.png"))); // NOI18N
+        botonPlay.setToolTipText("Play");
+        botonPlay.setEnabled(false);
+        botonPlay.setFocusable(false);
+        botonPlay.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        botonPlay.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        botonPlay.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonPlayActionPerformed(evt);
+            }
+        });
+        barraSimulacion.add(botonPlay);
+
+        botonPause.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/pausa24x24.png"))); // NOI18N
+        botonPause.setToolTipText("Pause");
+        botonPause.setEnabled(false);
+        botonPause.setFocusable(false);
+        botonPause.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        botonPause.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        botonPause.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonPauseActionPerformed(evt);
+            }
+        });
+        barraSimulacion.add(botonPause);
+
+        botonRefresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/refresh.png"))); // NOI18N
+        botonRefresh.setToolTipText("Refresh");
+        botonRefresh.setEnabled(false);
+        botonRefresh.setFocusable(false);
+        botonRefresh.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        botonRefresh.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        botonRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonRefreshActionPerformed(evt);
+            }
+        });
+        barraSimulacion.add(botonRefresh);
+
+        panelHerramientas.add(barraSimulacion);
+
+        getContentPane().add(panelHerramientas, java.awt.BorderLayout.PAGE_START);
+
+        panelCentral.setLayout(new java.awt.BorderLayout());
+
+        timeSeriePanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        timeSeriePanel.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                timeSeriePanelMouseMoved(evt);
+            }
+        });
+
+        javax.swing.GroupLayout timeSeriePanelLayout = new javax.swing.GroupLayout(timeSeriePanel);
+        timeSeriePanel.setLayout(timeSeriePanelLayout);
+        timeSeriePanelLayout.setHorizontalGroup(
+            timeSeriePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 746, Short.MAX_VALUE)
+        );
+        timeSeriePanelLayout.setVerticalGroup(
+            timeSeriePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 371, Short.MAX_VALUE)
+        );
+
+        panelCentral.add(timeSeriePanel, java.awt.BorderLayout.CENTER);
+
+        panelDeslizador.setPreferredSize(new java.awt.Dimension(750, 41));
+        panelDeslizador.setLayout(new java.awt.BorderLayout());
+
+        labelTime.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelTime.setText("0");
+        panelDeslizador.add(labelTime, java.awt.BorderLayout.NORTH);
+
+        deslizador_time.setValue(0);
+        deslizador_time.setFocusable(false);
+        deslizador_time.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                deslizador_timeStateChanged(evt);
+            }
+        });
+        panelDeslizador.add(deslizador_time, java.awt.BorderLayout.CENTER);
+
+        panelCentral.add(panelDeslizador, java.awt.BorderLayout.SOUTH);
+
+        getContentPane().add(panelCentral, java.awt.BorderLayout.CENTER);
+
+        panelSur.setPreferredSize(new java.awt.Dimension(36, 16));
+        panelSur.setLayout(new java.awt.BorderLayout());
+
+        barraEstado.setLayout(new java.awt.BorderLayout());
+
+        posicionRaton.setText("  ");
+        barraEstado.add(posicionRaton, java.awt.BorderLayout.LINE_START);
+
+        zoom.setText("x1  ");
+        barraEstado.add(zoom, java.awt.BorderLayout.EAST);
+
+        panelSur.add(barraEstado, java.awt.BorderLayout.SOUTH);
+
+        getContentPane().add(panelSur, java.awt.BorderLayout.SOUTH);
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void botonPreferenciasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonPreferenciasActionPerformed
+        PreferencesDialog dlg = new PreferencesDialog(this);
+        int resp = dlg.showDialog();
+        if (resp == PreferencesDialog.APPROVE_OPTION) {
+            this.simulator.setVoltageMargins(GlobalSettings.getHighA(), GlobalSettings.getHighB(),
+                    GlobalSettings.getHighC(), GlobalSettings.getHighD());
+            this.timeSeriePanel.setLimitLines(GlobalSettings.getHighA(), GlobalSettings.getHighB(),
+                    GlobalSettings.getHighC(), GlobalSettings.getHighD());
+        }
+    }//GEN-LAST:event_botonPreferenciasActionPerformed
+
+    private void botonAbrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonAbrirActionPerformed
+        JFileChooser dlg = new JFileChooser();        
+        int resp = dlg.showOpenDialog(this);
+        if (resp == JFileChooser.APPROVE_OPTION) {
+            try {
+                File file = dlg.getSelectedFile();                
+                // Leemos CSV
+                series = readSeries(file.getAbsolutePath());
+                // Actualizamos panle de series
+                timeSeriePanel.clear();
+                this.timeSeriePanel.setTimeScale(10);
+                this.timeSeriePanel.addTimeSeries(series, 0, GlobalSettings.getYAxisPosition(), 1, GlobalSettings.getZoom());
+                timeSeriePanel.setLimitLines(GlobalSettings.getHighA(), GlobalSettings.getHighB(),
+                        GlobalSettings.getHighC(), GlobalSettings.getHighD());
+                // Actualizamos deslizador
+                this.deslizador_time.setMinimum(0);
+                this.deslizador_time.setMaximum(series.size() - 1);
+                this.deslizador_time.setValue(0);
+                // Creamos simulador asociado
+                simulator = new Simulator(series, GlobalSettings.getHighA(),
+                        GlobalSettings.getHighB(), GlobalSettings.getHighC(), GlobalSettings.getHighD());
+                simulator.addTimeListener(new TimeHandler());
+                // Activamos botones del interfaz
+                this.botonPlay.setEnabled(true);
+                this.botonPause.setEnabled(false);
+                this.botonRefresh.setEnabled(false);
+            } catch (Exception ex) {
+                JOptionPane.showInternalMessageDialog(this, "Error in time series opening", "Time series", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_botonAbrirActionPerformed
+
+    
+    private void startSimulation() {
+        //The additional time series are created
+        timeSeriePanel.keepOnlyFirst();
+        TimeSeries estimation_series = new TimeSeries();
+        timeSeriePanel.addTimeSeries(estimation_series, 0, GlobalSettings.getYAxisPosition(), 1, GlobalSettings.getZoom());
+        TimeSeries danger_degree_series = new TimeSeries();
+        timeSeriePanel.addTimeSeries(danger_degree_series, 0, 0, 1, 1);
+        TimeSeries mean_series = new TimeSeries();
+        timeSeriePanel.addTimeSeries(mean_series, 0, GlobalSettings.getYAxisPosition(), 1, GlobalSettings.getZoom());
+        TimeSeries adjusted_series = new TimeSeries();
+        timeSeriePanel.addTimeSeries(adjusted_series, 0, GlobalSettings.getYAxisPosition(), 1, GlobalSettings.getZoom());
+        //The simulation is started    
+        simulator.startSimulation(timeSeriePanel.getTimeSeries().size());
+        botonRefresh.setEnabled(true);
+        timeSeriePanel.setVisible(ESTIMATION_TIMESERIES_INDEX, false);
+    }
+    
+    private void botonPlayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonPlayActionPerformed
+        if (!simulator.isRunning()) {
+            startSimulation();
+        } else {
+            simulator.pauseSimulation();
+        }
+        this.botonPlay.setEnabled(false);
+        this.botonPause.setEnabled(true);
+        this.botonAbrir.setEnabled(false);
+    }//GEN-LAST:event_botonPlayActionPerformed
+
+    private void deslizador_timeStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_deslizador_timeStateChanged
+        timeSeriePanel.setCurrentTime(deslizador_time.getValue());
+        labelTime.setText((String.valueOf(deslizador_time.getValue())));
+        timeSeriePanel.repaint();
+    }//GEN-LAST:event_deslizador_timeStateChanged
+
+    private void timeSeriePanelMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_timeSeriePanelMouseMoved
+        String text = "";
+        Point p = evt.getPoint();
+        Point o = timeSeriePanel.getOrigin();
+        if (p != null) {
+            text = "(" + (p.x-o.x) + "," + (-(p.y-o.y)) + ")";
+        }
+        this.posicionRaton.setText(text);
+    }//GEN-LAST:event_timeSeriePanelMouseMoved
+
+    private void botonZoomInActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonZoomInActionPerformed
+        GlobalSettings.setZoom(GlobalSettings.getZoom() * 1.5);
+        this.setZoom();
+        timeSeriePanel.repaint();
+    }//GEN-LAST:event_botonZoomInActionPerformed
+
+    private void botonZoomOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonZoomOutActionPerformed
+        GlobalSettings.setZoom(GlobalSettings.getZoom()/1.5);
+        this.setZoom();
+        timeSeriePanel.repaint();
+    }//GEN-LAST:event_botonZoomOutActionPerformed
+
+    private void setZoom(){
+        //Zoom sobre la serie original
+        AffineTransformInfo tInfo = timeSeriePanel.getTransformInfo(0);
+        tInfo.sy = GlobalSettings.getZoom();
+        //Zoom sobre la serie estimada
+        if (ESTIMATION_TIMESERIES_INDEX < timeSeriePanel.numOfTimeSeries()) {
+            tInfo = timeSeriePanel.getTransformInfo(ESTIMATION_TIMESERIES_INDEX);
+            tInfo.sy = GlobalSettings.getZoom();
+        }
+        //Zoom sobre la serie media
+        if (MEAN_TIMESERIES_INDEX < timeSeriePanel.numOfTimeSeries()) {
+            tInfo = timeSeriePanel.getTransformInfo(MEAN_TIMESERIES_INDEX);
+            tInfo.sy = GlobalSettings.getZoom();
+        }
+        //Zoom sobre la serie ajustada
+        if (ADJUSTED_TIMESERIES_INDEX < timeSeriePanel.numOfTimeSeries()) {
+            tInfo = timeSeriePanel.getTransformInfo(ADJUSTED_TIMESERIES_INDEX);
+            tInfo.sy = GlobalSettings.getZoom();
+        }
+        this.zoom.setText("x"+GlobalSettings.getZoom()+"  ");
+    }
+    
+    private void botonPauseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonPauseActionPerformed
+        if(simulator!=null){
+            simulator.pauseSimulation();
+        }
+        this.botonPlay.setEnabled(true);
+        this.botonPause.setEnabled(false);
+        this.botonAbrir.setEnabled(true);
+    }//GEN-LAST:event_botonPauseActionPerformed
+
+    private void bShowEstimationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bShowEstimationActionPerformed
+        if (ESTIMATION_TIMESERIES_INDEX < timeSeriePanel.numOfTimeSeries()) {
+            timeSeriePanel.setVisible(ESTIMATION_TIMESERIES_INDEX, this.bShowEstimation.isSelected());
+            timeSeriePanel.repaint();
+        }
+    }//GEN-LAST:event_bShowEstimationActionPerformed
+
+    private void bShowDangerDegreeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bShowDangerDegreeActionPerformed
+        if (FUZZY_DANGER_TIMESERIES_INDEX < timeSeriePanel.numOfTimeSeries()) {
+            timeSeriePanel.setVisible(FUZZY_DANGER_TIMESERIES_INDEX, this.bShowDangerDegree.isSelected());
+            timeSeriePanel.repaint();
+        }
+    }//GEN-LAST:event_bShowDangerDegreeActionPerformed
+
+    private void bShowMeanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bShowMeanActionPerformed
+        if (MEAN_TIMESERIES_INDEX < timeSeriePanel.numOfTimeSeries()) {
+            timeSeriePanel.setVisible(MEAN_TIMESERIES_INDEX, this.bShowMean.isSelected());
+            timeSeriePanel.repaint();
+        }
+    }//GEN-LAST:event_bShowMeanActionPerformed
+
+    private void bShowAdjustedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bShowAdjustedActionPerformed
+        if (ADJUSTED_TIMESERIES_INDEX < timeSeriePanel.numOfTimeSeries()) {
+            timeSeriePanel.setVisible(ADJUSTED_TIMESERIES_INDEX, this.bShowAdjusted.isSelected());
+            timeSeriePanel.repaint();
+        }
+    }//GEN-LAST:event_bShowAdjustedActionPerformed
+
+    private void botonRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonRefreshActionPerformed
+        if(simulator!=null){
+            simulator.resetSimulation();
+            timeSeriePanel.keepOnlyFirst();
+            deslizador_time.setValue(0);
+            this.botonPlay.setEnabled(true);
+            this.botonRefresh.setEnabled(false);
+            this.botonPause.setEnabled(false);
+            this.botonAbrir.setEnabled(true);
+            timeSeriePanel.repaint();
+        }
+    }//GEN-LAST:event_botonRefreshActionPerformed
+    
+    /**
+     *
+     */
+    private class TimeHandler implements TimeListener {
+        @Override
+        public void timeChange(TimeEvent evt) {                     
+            // Actualizamos las series del panel
+//            timeSeriePanel.addTimeData(ALPHA_TIMESERIES_INDEX, new Point2D.Double(evt.getTime(), evt.getAlpha()));
+            timeSeriePanel.addTimeData(ESTIMATION_TIMESERIES_INDEX, new Point2D.Double(evt.getTime(), evt.getEstimationValue()));
+            timeSeriePanel.addTimeData(FUZZY_DANGER_TIMESERIES_INDEX, new Point2D.Double(evt.getTime(), evt.getDangerDegree()*150.0));
+            timeSeriePanel.addTimeData(MEAN_TIMESERIES_INDEX, new Point2D.Double(evt.getTime(), evt.getMeanBehind()));
+            timeSeriePanel.addTimeData(ADJUSTED_TIMESERIES_INDEX, new Point2D.Double(evt.getTime(), evt.getAdjustedValue()));
+            timeSeriePanel.setCurrentTime((int)evt.getTime());            
+            //timeSeriePanel.repaint(); //No necesario, llamado implícitamente 
+                                        //al cambiar el valor del deslizador   
+            //Actaulizamos deslizador y etiqueta
+            labelTime.setText((String.valueOf(evt.getTime())));
+            deslizador_time.setValue((int)evt.getTime());              
+        }
+
+        @Override
+        public void timeOut(TimeEvent evt) {
+            botonPlay.setEnabled(false);
+            botonRefresh.setEnabled(true);
+            botonPause.setEnabled(false);
+            botonAbrir.setEnabled(true);
+        }
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JToggleButton bShowAdjusted;
+    private javax.swing.JToggleButton bShowDangerDegree;
+    private javax.swing.JToggleButton bShowEstimation;
+    private javax.swing.JToggleButton bShowMean;
+    private javax.swing.JToolBar barraArchivo;
+    private javax.swing.JPanel barraEstado;
+    private javax.swing.JToolBar barraSimulacion;
+    private javax.swing.JToolBar barraZoom;
+    private javax.swing.JButton botonAbrir;
+    private javax.swing.JButton botonPause;
+    private javax.swing.JButton botonPlay;
+    private javax.swing.JButton botonPreferencias;
+    private javax.swing.JButton botonRefresh;
+    private javax.swing.JButton botonZoomIn;
+    private javax.swing.JButton botonZoomOut;
+    private javax.swing.JSlider deslizador_time;
+    public javax.swing.JLabel labelTime;
+    private javax.swing.JPanel panelCentral;
+    private javax.swing.JPanel panelDeslizador;
+    private javax.swing.JPanel panelHerramientas;
+    private javax.swing.JPanel panelSur;
+    public javax.swing.JLabel posicionRaton;
+    private energypeakcontrol.TimeSeriesPanel timeSeriePanel;
+    public javax.swing.JLabel zoom;
+    // End of variables declaration//GEN-END:variables
+}
